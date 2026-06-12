@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 
 function App() {
   const [colaboradores, setColaboradores] = useState([])
-
   const [formulario, setFormulario] = useState({
     id: null,
     documentoIdentidad: '',
@@ -14,12 +13,15 @@ function App() {
     estadoActivo: true
   })
 
+  const BASE_URL = 'https://talento-humano-backend.onrender.com/api/colaboradores';
+
   const cargarColaboradores = () => {
-    fetch('http://localhost:8080/api/colaboradores')
+    // Fíjate que estoy escribiendo la ruta COMPLETA manualmente aquí
+    fetch('https://talento-humano-backend.onrender.com/api/colaboradores')
       .then(respuesta => respuesta.json())
       .then(datos => setColaboradores(datos))
       .catch(error => console.error("Error al cargar:", error));
-  }
+}
 
   useEffect(() => {
     cargarColaboradores()
@@ -37,9 +39,7 @@ function App() {
     e.preventDefault();
 
     const metodo = formulario.id ? 'PUT' : 'POST';
-    const url = formulario.id 
-      ? `http://localhost:8080/api/colaboradores/${formulario.id}` 
-      : 'http://localhost:8080/api/colaboradores';
+    const url = formulario.id ? `${BASE_URL}/${formulario.id}` : BASE_URL;
 
     fetch(url, {
       method: metodo,
@@ -51,7 +51,7 @@ function App() {
         limpiarFormulario();
         cargarColaboradores();
       } else {
-        alert("¡Error! No se pudo guardar. Verifica que los datos sean correctos.");
+        alert("¡Error! No se pudo guardar. Verifica los datos.");
       }
     })
     .catch(error => console.error("Error al guardar:", error));
@@ -62,8 +62,8 @@ function App() {
   }
 
   const eliminarColaborador = (id) => {
-    if (window.confirm("¿Estás seguro de que quieres eliminar a este colaborador?")) {
-      fetch(`http://localhost:8080/api/colaboradores/${id}`, { method: 'DELETE' })
+    if (window.confirm("¿Estás seguro de eliminar a este colaborador?")) {
+      fetch(`${BASE_URL}/${id}`, { method: 'DELETE' })
       .then(() => cargarColaboradores())
       .catch(error => console.error("Error al eliminar:", error));
     }
@@ -91,7 +91,7 @@ function App() {
             <input type="checkbox" name="estadoActivo" checked={formulario.estadoActivo} onChange={manejarCambio} />
             Activo
           </label>
-                 
+                  
           <button type="submit" style={{ padding: '8px 15px', backgroundColor: formulario.id ? '#f39c12' : '#27ae60', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
             {formulario.id ? 'Actualizar' : 'Guardar'}
           </button>
@@ -111,8 +111,8 @@ function App() {
             <th style={{ padding: '12px', border: '1px solid #ddd' }}>Nombres</th>
             <th style={{ padding: '12px', border: '1px solid #ddd' }}>Apellidos</th>
             <th style={{ padding: '12px', border: '1px solid #ddd' }}>Correo</th>
-            <th style={{ padding: '12px', border: '1px solid #ddd' }}>Estado</th>
             <th style={{ padding: '12px', border: '1px solid #ddd' }}>Cargo</th>
+            <th style={{ padding: '12px', border: '1px solid #ddd' }}>Estado</th>
             <th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'center' }}>Acciones</th>
           </tr>
         </thead>
